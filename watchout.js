@@ -84,22 +84,23 @@ var enemyData = [
                  ];
 var enemies;
 var collisions = 0;
+var score = 0;
+
+var resetScore = function(){
+  score = 0;
+}
+
 var update = function(data) {
 enemies = d3.select('svg').selectAll('circle')
        .data(data);
 
-// enemies.attr('r', 10)
-       // .style('fill', function(d){return d.color})
-
-
 enemies.enter()
        .append('circle');
-       // .attr('r', 10)
-      // .style('fill', function(d){return d.color})
 
+var collided = false;
 
 enemies.transition()
-        .duration(3000)
+        .duration(700)
         .attr('cy', function(d){return d.y})
         .attr('cx', function(d){return d.x})
         .attr('r', 10)
@@ -107,7 +108,6 @@ enemies.transition()
         .tween('changeColor', function(){
 
           return function(t){
-            var collided = false;
             var enemy = d3.select(this);
             var xPos = parseFloat(enemy.attr('cx'));
             var yPos = parseFloat(enemy.attr('cy'));
@@ -122,29 +122,36 @@ enemies.transition()
             var sumRad = playerXRad + enemyRad;
 
             var separation = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
-            if (separation < sumRad){
+
+            if (!collided && (separation < sumRad)){
               collided = true;
-              collided++;
-              while(separation < sumRad){
-                console.log('passin through');
+              collisions++;
+              if (score > highScore) {
+                highScore = score;
               }
+              resetScore();
             }
+            // console.log('collisions ' + collisions);
+            // console.log('score ' +score);
           };
         });
 };
 
 update(enemyData); //initialize
-setInterval(function(){return update(generatePosition());}, 3000);
+setInterval(function(){return update(generatePosition());}, 700);
 
-// compare the position of each enemy to the position of player
-// if the difference in locations < sum of radii -- collision occured
-//
-// enemies --- d.r -- this
-// player -- d.rx
-//
-// enemies --- d.x, d.y
-// player --- d.x, d.y
-//
-// return function()
+var highScore = 0;
+var setScoreBoard = function() {
+  score++;
+  d3.select('div.current').selectAll('span').text(score)
+  d3.select('div.collisions').selectAll('span').text(collisions)
+  d3.select('div.high').selectAll('span').text(highScore);
+};
+
+
+setInterval(setScoreBoard, 50);
+// console.log(test);
+
+
 
 
