@@ -54,35 +54,36 @@ var generatePosition = function(){
 }
 
 var enemyData = [
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'},
-                 {x:200, y:200, color: 'black'}
+                 {x:0, y:0, color: 'black'},
+                 {x:0, y:0, color: 'black'},
+                 {x:0, y:0, color: 'black'},
+                 {x:0, y:0, color: 'black'},
+                 {x:0, y:0, color: 'black'},
+                 {x:0, y:0, color: 'black'},
+                 {x:0, y:0, color: 'black'},
+                 {x:0, y:0, color: 'black'},
+                 {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'},
+                 // {x:0, y:0, color: 'black'}
                  ];
 var enemies;
+var collisions = 0;
 var update = function(data) {
 enemies = d3.select('svg').selectAll('circle')
        .data(data);
@@ -98,24 +99,42 @@ enemies.enter()
 
 
 enemies.transition()
-        .duration(1000)
+        .duration(3000)
         .attr('cy', function(d){return d.y})
         .attr('cx', function(d){return d.x})
         .attr('r', 10)
         .style('fill', function(d){return d.color})
         .tween('changeColor', function(){
+
           return function(t){
-            var xPos = enemies.attr('cx');
-            var yPos = enemies.attr('cy');
-            var enemyRad = enemies.attr('r');
+            var collided = false;
+            var enemy = d3.select(this);
+            var xPos = parseFloat(enemy.attr('cx'));
+            var yPos = parseFloat(enemy.attr('cy'));
+            var enemyRad = parseInt(enemy.attr('r'));
+            var playerXPos = parseFloat(player.attr('cx'));
+            var playerYPos = parseFloat(player.attr('cy'));
+            var playerXRad = parseInt(player.attr('rx'));
+            var playerYRad = parseInt(player.attr('ry'));
+
+            var distanceX = (xPos - playerXPos);
+            var distanceY = (yPos - playerYPos);
+            var sumRad = playerXRad + enemyRad;
+
+            var separation = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+            if (separation < sumRad){
+              collided = true;
+              collided++;
+              while(separation < sumRad){
+                console.log('passin through');
+              }
+            }
           };
-
-
         });
 };
 
 update(enemyData); //initialize
-setInterval(function(){return update(generatePosition());}, 1000);
+setInterval(function(){return update(generatePosition());}, 3000);
 
 // compare the position of each enemy to the position of player
 // if the difference in locations < sum of radii -- collision occured
